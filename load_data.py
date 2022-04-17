@@ -9,6 +9,7 @@ from PIL import Image
 
 image_path = "./dataset/images/"
 annotation_path = "./dataset/annotations/"
+tester = "./Tester/"
 
 
 def load_image(filename):
@@ -19,22 +20,23 @@ def load_image(filename):
     return None
 
 
-def load_annotation(super_res = False):
-    lst = []
+def load_annotation(dir_path, super_res = False):
     sr = cv.dnn_superres.DnnSuperResImpl_create()
     path = "models/LapSRN_x8.pb"
     sr.readModel(path)
     sr.setModel("lapsrn", 8)
-    for filename in os.listdir(annotation_path):
-        f = os.path.join(annotation_path, filename)
+    annotaion = []
+    images = []
+    counter =0
+    for filename in os.listdir(dir_path):
+        f = os.path.join(dir_path, filename)
         tree = ET.parse(f)
         root = tree.getroot()
         filename = root.find('filename').text
         image = np.array(load_image(filename))
         if image is not None:
             for index in root.iter('object'):
-                fcmsk = FaceMask()
-                fcmsk.set_mask(index.find('name').text == "with_mask")
+                annotaion.append(index.find('name').text == "with_mask")
                 xmin = int(index.find('bndbox').find('xmin').text)
                 xmax = int(index.find('bndbox').find('xmax').text)
                 ymin = int(index.find('bndbox').find('ymin').text)
@@ -42,13 +44,19 @@ def load_annotation(super_res = False):
                 cropped_image = image[ymin:ymax,xmin:xmax]
                 if super_res:
                     result = sr.upsample(cropped_image)
-                    fcmsk.set_image(result)
                 else:
-                    fcmsk.set_image(cropped_image)
-                    pass
-                lst.append(fcmsk)
-    return lst
+                    result = cropped_image.reshape(cropped_image.shape[0],-1)
+                # result = Image.fromarray(result)
+                # result.save("./ProcessedImages/fsmsk" + str(counter) + ".png")
+                images.append(result)
+                counter+=1
+    annotaion = np.array(annotaion)
+    return images, annotaion
 
 
-lst = load_annotation(super_res=True)
-print("finished")
+images, annotation = load_annotation(annotation_path,True)
+images = np.asarray(images,dtype='object')
+annotation = np.asarray(annotation)
+np.savez('./imageData.npz',images,annotation, annotation)
+
+
