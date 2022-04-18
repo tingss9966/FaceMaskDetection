@@ -1,8 +1,6 @@
 import math
-
 import numpy as np
 import cv2 as cv
-from FaceMask import *
 import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
 import os
@@ -11,7 +9,7 @@ from PIL import Image
 
 image_path = "./dataset/images/"
 annotation_path = "./dataset/annotations/"
-tester = "./Tester/"
+tester = "./Temp/"
 min_height = 100
 min_width = 100
 
@@ -53,7 +51,6 @@ def load_annotation(dir_path, super_res = False):
                 else:
                     result = cropped_image.reshape(cropped_image.shape[0],-1)
 
-                # if ymax-ymin>=min_height and xmax-xmin>=min_width:
                 # result = Image.fromarray(result)
                 # result.save("./ProcessedImages/fsmsk" + str(counter) + ".png")
                 result = Image.fromarray(result)
@@ -67,10 +64,10 @@ def load_annotation(dir_path, super_res = False):
 
 
 
-images, annotation = load_annotation(annotation_path,True)
-images = np.asarray(images)
-annotation = np.asarray(annotation)
-np.savez('./imageData.npz',images,annotation)
+images, annotation = load_annotation(tester,True)
+# images = np.asarray(images)
+# annotation = np.asarray(annotation)
+# np.savez('./imageData.npz',images,annotation)
 
 print(len(images))
 print(len(annotation))
