@@ -6,6 +6,7 @@ import numpy as np
 import keras
 import torch
 import tensorflow as tf
+import time
 
 
 def get_result_plot(fitted_model):
@@ -18,9 +19,18 @@ def get_result_plot(fitted_model):
     plt.legend(['train set', 'validation set'], loc='upper right')
     plt.show()
 
+class TimeHistory(keras.callbacks.Callback):
+    def on_train_begin(self, logs={}):
+        self.times = []
+
+    def on_epoch_begin(self, batch, logs={}):
+        self.epoch_time_start = time.time()
+
+    def on_epoch_end(self, batch, logs={}):
+        self.times.append(time.time() - self.epoch_time_start)
 
 # Hyper-parameters
-lr = 0.00001
+lr = 0.00005
 epochs = 30
 dropout = 0.3
 batch_size = 50
@@ -70,11 +80,11 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 opt = tf.keras.optimizers.Adam(learning_rate=lr, decay=1e-5)
 model.compile(optimizer=opt, loss=tf.keras.losses.BinaryFocalCrossentropy(),
               metrics=['accuracy'])
-
+time_callback = TimeHistory()
 history = model.fit(x_train, y_train, epochs=epochs,
                     validation_data=(x_val, y_val), batch_size=batch_size,
-                    callbacks=[model_checkpoint_callback, early_stop])
-
+                    callbacks=[model_checkpoint_callback, early_stop, time_callback])
+times = time_callback.times
 best_model = keras.models.load_model("cnn_weights.h5")
 
 temp2 = best_model.evaluate(x_test,
@@ -82,4 +92,7 @@ temp2 = best_model.evaluate(x_test,
                             batch_size=batch_size)
 get_result_plot(history)
 
+print(times)
+print("Mean training time EfficientNetV2: " + str(np.mean(np.array(times))))
+print("Total training time InceptionResNetV2: " + str(np.sum(np.array(times))))
 #
