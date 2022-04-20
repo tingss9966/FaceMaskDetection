@@ -3,28 +3,24 @@ import pandas as pd
 from keras.layers import Conv2D, Flatten, Dense, MaxPooling2D, Dropout
 import sklearn.model_selection as model
 import numpy as np
-from keras.utils import np_utils
-from sklearn.preprocessing import LabelEncoder
 import keras
 import torch
-
 import tensorflow as tf
-import cv2
+
 
 def get_result_plot(fitted_model):
     history_pd = pd.DataFrame(fitted_model.history)
-
     plt.plot(history_pd['accuracy'])
     plt.plot(history_pd['val_accuracy'])
-    plt.title('Model accuracy')
+    plt.title('Model accuracy CNN')
     plt.xlabel('epoch')
-    plt.ylabel('loss')
-    plt.legend(['train set', 'test set'], loc='upper right')
+    plt.ylabel('accuracy')
+    plt.legend(['train set', 'validation set'], loc='upper right')
     plt.show()
 
 
 # Hyper-parameters
-lr = 0.001
+lr = 0.00001
 epochs = 30
 dropout = 0.3
 batch_size = 50
@@ -64,7 +60,7 @@ model = keras.models.Sequential([
 ])
 
 model.summary()
-
+early_stop = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
 model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath="./cnn_weights.h5",
     monitor='val_accuracy',
@@ -72,14 +68,12 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     save_best_only=True)
 
 opt = tf.keras.optimizers.Adam(learning_rate=lr, decay=1e-5)
-model.compile(optimizer=opt, loss=tf.keras.losses.BinaryCrossentropy(),
+model.compile(optimizer=opt, loss=tf.keras.losses.BinaryFocalCrossentropy(),
               metrics=['accuracy'])
-
-
 
 history = model.fit(x_train, y_train, epochs=epochs,
                     validation_data=(x_val, y_val), batch_size=batch_size,
-                    callbacks=[model_checkpoint_callback])
+                    callbacks=[model_checkpoint_callback, early_stop])
 
 best_model = keras.models.load_model("cnn_weights.h5")
 

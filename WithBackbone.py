@@ -11,7 +11,7 @@ import time
 
 # Hyper-parameters, Global variables
 lr = 0.001
-epochs = 10
+epochs = 30
 dropout = 0.3
 batch_size = 50
 
@@ -29,13 +29,12 @@ class TimeHistory(keras.callbacks.Callback):
 
 def get_result_plot(fitted_model):
     history_pd = pd.DataFrame(fitted_model.history)
-
     plt.plot(history_pd['accuracy'])
     plt.plot(history_pd['val_accuracy'])
     plt.title('Model accuracy')
     plt.xlabel('epoch')
-    plt.ylabel('loss')
-    plt.legend(['train set', 'test set'], loc='upper right')
+    plt.ylabel('accuracy')
+    plt.legend(['train set', 'validation set'], loc='upper right')
     plt.show()
 
 
@@ -69,6 +68,7 @@ def NetTrain(x_train, y_train, x_val, y_val,x_test,y_test, backbonename):
 
     model.summary()
     loss = tf.keras.losses.BinaryFocalCrossentropy()
+    early_stop = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=model_file_name,
                                                                    monitor='val_accuracy',
                                                                    mode='max',
@@ -84,7 +84,7 @@ def NetTrain(x_train, y_train, x_val, y_val,x_test,y_test, backbonename):
                         validation_data=(x_val, y_val),
                         batch_size=batch_size,
                         epochs=epochs,
-                        callbacks=[model_checkpoint_callback, time_callback])
+                        callbacks=[model_checkpoint_callback, time_callback, early_stop])
     times = time_callback.times
 
     best_model = keras.models.load_model(model_file_name)
@@ -105,13 +105,16 @@ x_val, x_test, y_val, y_test = model.train_test_split(x_tot, y_tot, test_size=0.
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
-inc_history, inc_time, inc_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "InceptionResNetV2")
 eff_history, eff_time, eff_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "EfficientNetV2")
+get_result_plot(eff_history)
+inc_history, inc_time, inc_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "InceptionResNetV2")
+get_result_plot(inc_history)
 
-epoch_list = np.arange(epochs)+1
-
-plt.plot(epoch_list, inc_time)
-plt.plot(epoch_list, eff_time)
+len_inc = len(inc_time)
+len_eff = len(eff_time)
+x_inc = np.arange(len_inc)+1
+x_eff = np.arange(len_eff)+1
+plt.plot(x_eff, inc_time)
+plt.plot(x_inc, eff_time)
 plt.show()
 
