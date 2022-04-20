@@ -113,42 +113,44 @@ def NetTrain(x_train, y_train, x_val, y_val,x_test,y_test, backbonename):
 
     return history, times, test
 
-# Load data after processing
-arr = np.load('./imageData.npz', allow_pickle=True)
-img_list = arr['arr_0']
-annotation_list = arr['arr_1']
 
-# Split the data into training validation and test set.
-x_train, x_tot, y_train, y_tot = model.train_test_split(img_list, annotation_list, test_size=0.3, random_state=42)
-x_val, x_test, y_val, y_test = model.train_test_split(x_tot, y_tot, test_size=0.5, random_state=42)
+if __name__ == "__main__":
+    # Load data after processing
+    arr = np.load('./imageData.npz', allow_pickle=True)
+    img_list = arr['arr_0']
+    annotation_list = arr['arr_1']
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Split the data into training validation and test set.
+    x_train, x_tot, y_train, y_tot = model.train_test_split(img_list, annotation_list, test_size=0.3, random_state=42)
+    x_val, x_test, y_val, y_test = model.train_test_split(x_tot, y_tot, test_size=0.5, random_state=42)
 
-# Run both models and save the best model of each to file
-eff_history, eff_time, eff_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "EfficientNetV2")
-get_result_plot(eff_history)
-inc_history, inc_time, inc_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "InceptionResNetV2")
-get_result_plot(inc_history)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-len_inc = len(inc_time)
-len_eff = len(eff_time)
-x_inc = np.arange(len_inc)+1
-x_eff = np.arange(len_eff)+1
+    # Run both models and save the best model of each to file
+    eff_history, eff_time, eff_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "EfficientNetV2")
+    get_result_plot(eff_history)
+    inc_history, inc_time, inc_test = NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, "InceptionResNetV2")
+    get_result_plot(inc_history)
 
-# printing the running time of each epoch as well as the mean and total run time
-print(eff_time)
-print(inc_time)
-print("Mean training time EfficientNetV2" + str(np.mean(np.array(eff_time))))
-print("Mean training time InceptionResNetV2" + str(np.mean(np.array(inc_time))))
-print("Total training time EfficientNetV2" + str(np.sum(np.array(eff_time))))
-print("Total training time InceptionResNetV2" + str(np.sum(np.array(inc_time))))
+    len_inc = len(inc_time)
+    len_eff = len(eff_time)
+    x_inc = np.arange(len_inc)+1
+    x_eff = np.arange(len_eff)+1
 
-# plot a graph comparing the running time of each model
-plt.plot(x_eff, eff_time)
-plt.plot(x_inc, inc_time)
-plt.xlabel("epochs")
-plt.ylabel("Time/Sec")
-plt.title("Training Time")
-plt.legend(["EfficientNetV2", "InceptionResNetV2"], loc='upper right')
-plt.show()
+    # printing the running time of each epoch as well as the mean and total run time
+    print(eff_time)
+    print(inc_time)
+    print("Mean training time EfficientNetV2" + str(np.mean(np.array(eff_time))))
+    print("Mean training time InceptionResNetV2" + str(np.mean(np.array(inc_time))))
+    print("Total training time EfficientNetV2" + str(np.sum(np.array(eff_time))))
+    print("Total training time InceptionResNetV2" + str(np.sum(np.array(inc_time))))
+
+    # plot a graph comparing the running time of each model
+    plt.plot(x_eff, eff_time)
+    plt.plot(x_inc, inc_time)
+    plt.xlabel("epochs")
+    plt.ylabel("Time/Sec")
+    plt.title("Training Time")
+    plt.legend(["EfficientNetV2", "InceptionResNetV2"], loc='upper right')
+    plt.show()
 

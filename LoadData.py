@@ -73,10 +73,11 @@ def load_annotation(dir_path, super_res=False):
     return resized_images, annotation
 
 
-# Run the image loading algorithm and save it to a .npz file
-images, annotations = load_annotation(annotation_path, super_res)
-images = np.asarray(images)
-annotations = np.asarray(annotations)
-np.savez('./imageData.npz', images, annotations)
-print(len(images))
-print(len(annotations))
+if __name__ == "__main__":
+    # Run the image loading algorithm and save it to a .npz file
+    images, annotations = load_annotation(annotation_path, super_res)
+    images = np.asarray(images)
+    annotations = np.asarray(annotations)
+    np.savez('./imageData.npz', images, annotations)
+    print(len(images))
+    print(len(annotations))
