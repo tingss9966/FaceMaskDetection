@@ -11,7 +11,7 @@ import time
 
 # Hyper-parameters, Global variables
 lr = 0.001
-epochs = 7
+epochs = 30
 dropout = 0.3
 batch_size = 50
 

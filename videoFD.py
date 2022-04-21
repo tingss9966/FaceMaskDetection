@@ -1,8 +1,9 @@
+"""Import packages and libraries"""
 import cv2 as cv
 import numpy as np
 from tensorflow import keras
 
-# Parameters:
+# Parameters: (Choose which classification model to use, Need to run model first before this)
 mod = "EfficientNetV2"  # EfficientNetV2/InceptionNetV2/CNN
 
 
