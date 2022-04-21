@@ -53,13 +53,15 @@ while True:
         label = ""
         # based on the results given, determine if wearing a mask or not
         if result[0] < 0.5:
-            label = 0
+            label = 'without_mask'
+            color = (0,0,255)
         else:
-            label = 1
+            label = 'with_mask'
+            color = (0,255,0)
         # Draw rectangle around the face and color it with the classified color
-        cv.rectangle(image, (x, y), (x + w, y + h), color_dict[label], 2)
-        cv.rectangle(image, (x, y - 40), (x + w, y), color_dict[label], -1)
-        cv.putText(image, labels_dict[label], (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.8,
+        cv.rectangle(image, (x, y), (x + w, y + h), color, 2)
+        cv.rectangle(image, (x, y - 40), (x + w, y), color, -1)
+        cv.putText(image, label, (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.8,
                     (255, 255, 255), 2)
 
     if image is not None:
