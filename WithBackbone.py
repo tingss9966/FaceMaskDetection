@@ -16,7 +16,7 @@ dropout = 0.3
 batch_size = 50
 
 
-#Time history class, used to record the time of each epoch
+# Time history class, used to record the time of each epoch
 class TimeHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
         self.times = []
@@ -32,6 +32,8 @@ class TimeHistory(keras.callbacks.Callback):
 Plot out the results of a fitted model
 fitted_model: the return statement of a model.fit
 """
+
+
 def get_result_plot(fitted_model):
     history_pd = pd.DataFrame(fitted_model.history)
     plt.plot(history_pd['accuracy'])
@@ -52,7 +54,9 @@ y_train: Training set label
  y_test: Test set label
  backbonename: specified backbone
 """
-def NetTrain(x_train, y_train, x_val, y_val,x_test,y_test, backbonename):
+
+
+def NetTrain(x_train, y_train, x_val, y_val, x_test, y_test, backbonename):
     # Choose between two model as the backbone of the fine tuned model
     if backbonename == "EfficientNetV2":
         backbone = tf.keras.applications.efficientnet_v2.EfficientNetV2S(
@@ -108,8 +112,8 @@ def NetTrain(x_train, y_train, x_val, y_val,x_test,y_test, backbonename):
 
     # evaluate test set
     test = best_model.evaluate(x_test,
-                        y_test,
-                        batch_size=batch_size)
+                               y_test,
+                               batch_size=batch_size)
 
     return history, times, test
 
@@ -134,8 +138,8 @@ if __name__ == "__main__":
 
     len_inc = len(inc_time)
     len_eff = len(eff_time)
-    x_inc = np.arange(len_inc)+1
-    x_eff = np.arange(len_eff)+1
+    x_inc = np.arange(len_inc) + 1
+    x_eff = np.arange(len_eff) + 1
 
     # printing the running time of each epoch as well as the mean and total run time
     print(eff_time)
@@ -153,4 +157,3 @@ if __name__ == "__main__":
     plt.title("Training Time")
     plt.legend(["EfficientNetV2", "InceptionResNetV2"], loc='upper right')
     plt.show()
-

@@ -12,7 +12,6 @@ super_res = True
 image_path = "./dataset/images/"
 annotation_path = "./dataset/annotations/"
 
-
 # A tester path used for testing
 # tester = "./Temp/"
 
@@ -20,6 +19,8 @@ annotation_path = "./dataset/annotations/"
 
     filename: str: the file name of the image
     """
+
+
 def load_image(filename):
     image = cv.imread(image_path + filename)
     image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
@@ -32,6 +33,8 @@ def load_image(filename):
     dir_path: str: the directory path for the annotations
     super_res: bool: whether or not to use super resolution on image preprocessing
     """
+
+
 def load_annotation(dir_path, super_res=False):
     # Image Super Resolution used to increase the resolution of images to get better training data
     sr = cv.dnn_superres.DnnSuperResImpl_create()
