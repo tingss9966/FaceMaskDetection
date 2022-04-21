@@ -11,7 +11,7 @@ import time
 
 # Hyper-parameters, Global variables
 lr = 0.001
-epochs = 30
+epochs = 1
 dropout = 0.3
 batch_size = 50
 
@@ -144,10 +144,10 @@ if __name__ == "__main__":
     # printing the running time of each epoch as well as the mean and total run time
     print(eff_time)
     print(inc_time)
-    print("Mean training time EfficientNetV2" + str(np.mean(np.array(eff_time))))
-    print("Mean training time InceptionResNetV2" + str(np.mean(np.array(inc_time))))
-    print("Total training time EfficientNetV2" + str(np.sum(np.array(eff_time))))
-    print("Total training time InceptionResNetV2" + str(np.sum(np.array(inc_time))))
+    print("Mean training time EfficientNetV2 " + str(np.mean(np.array(eff_time))))
+    print("Mean training time InceptionResNetV2 " + str(np.mean(np.array(inc_time))))
+    print("Total training time EfficientNetV2 " + str(np.sum(np.array(eff_time))))
+    print("Total training time InceptionResNetV2 " + str(np.sum(np.array(inc_time))))
 
     # plot a graph comparing the running time of each model
     plt.plot(x_eff, eff_time)
